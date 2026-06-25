@@ -17,4 +17,3 @@
       - 'version'
   events:
     STREAM:
-  restrict-stream-events: false

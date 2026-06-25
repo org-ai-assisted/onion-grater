@@ -34,6 +34,11 @@
   commands:
     GETINFO:
       - 'onions/current'
+      ## OnionShare queries Tor's version on startup (e.g. to check v3
+      ## stealth-onion support). Ported from the Tails onion-grater profile;
+      ## required by current OnionShare (verified with onionshare-cli 2.6.3,
+      ## which is otherwise filtered at GETINFO version and stalls).
+      - 'version'
       ## For "bundled Tor" configuration.
       - pattern: 'status/bootstrap-phase'
         response:
@@ -81,6 +86,10 @@
     SIGNAL:
       suppress: true
     CONF_CHANGED:
+      suppress: true
+    ## stem (used by OnionShare) subscribes to STATUS_SERVER. Ported from the
+    ## Tails onion-grater profile; required by current OnionShare.
+    STATUS_SERVER:
       suppress: true
     HS_DESC:
       response:

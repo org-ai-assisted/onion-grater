@@ -1,4 +1,4 @@
-#!/usr/bin/python3 -su
+#!/usr/bin/python3 -IBu
 
 # This filter proxy allows fine-grained access whitelists of commands
 # (and their argunents) and events on a per-application basis, stored
@@ -254,9 +254,11 @@ class FilteredControlPortProxySession:
         if line.isspace():
             return
         self.debug_log_send(line)
-        self.wfile.write(bytes(line, 'ascii'))
+        # Write the line and its terminator in a single write() so the
+        # response is not split across syscalls (ported from Tails).
         if not raw:
-            self.wfile.write(bytes("\r\n", 'ascii'))
+            line += "\r\n"
+        self.wfile.write(bytes(line, 'ascii'))
         self.wfile.flush()
 
     def get_rule(self, cmd, arg_str):

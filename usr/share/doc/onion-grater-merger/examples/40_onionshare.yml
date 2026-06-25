@@ -37,7 +37,7 @@
       ## For "bundled Tor" configuration.
       - pattern: 'status/bootstrap-phase'
         response:
-        - pattern:     '250-status/bootstrap-phase=*'
+        - pattern:     '250-status/bootstrap-phase=.*'
           replacement: '250-status/bootstrap-phase=NOTICE BOOTSTRAP PROGRESS=100 TAG=done SUMMARY="Done"'
     GETCONF:
       - 'hiddenservicesinglehopmode'
@@ -74,7 +74,7 @@
         replacement: '{} Flags=V3Auth Port=80,{client-address}:{} ClientAuthV3={}'
       ## }}}
     DEL_ONION:
-      - '.+'
+      - '\S+'
   confs:
     __owningcontrollerprocess:
   events:

@@ -605,6 +605,17 @@ class FilteredControlPortProxySession:
                 # access-restricted according to our filter instead.
                 self.respond("250 OK")
 
+            # Whonix-specific (not in Tails upstream): acknowledge these
+            # harmless setup commands with a no-op 250 OK instead of letting
+            # them fall through to the rule lookup (which would 510-filter
+            # them). Added for Bisq 2 / RetoSwap, which issue them during
+            # control-port initialisation. Keep on resync with Tails.
+            elif cmd == "TAKEOWNERSHIP":
+                self.respond("250 OK")
+
+            elif cmd == "RESETCONF":
+                self.respond("250 OK")
+
             elif cmd == "QUIT":
                 self.respond("250 closing connection")
                 break

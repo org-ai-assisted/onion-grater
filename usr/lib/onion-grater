@@ -290,6 +290,9 @@ class FilteredControlPortProxySession:
         self.wfile = handler.wfile
         self.client_streams = set()
         self.subscribed_event_listeners = []
+        # Buffer of bytes received from the client but not yet returned as a
+        # full line by get_client_request() (see the fix there).
+        self._buf = b""
 
     def debug_log_send(self, line):
         if GLOBAL_ARGS.print_responses:
@@ -545,23 +548,31 @@ class FilteredControlPortProxySession:
         self.update_event_subscriptions(event_subs)
 
     def get_client_request(self):
-        while True:
+        # Whonix-specific fix for an upstream Tails DoS (see the onion-grater
+        # upstream-bug repo, #06): accumulate with a BLOCKING read instead of
+        # busy-spinning on MSG_PEEK. The upstream code re-peeked the same
+        # buffered bytes whenever a request was not yet newline-terminated and
+        # `continue`d without blocking, pinning a CPU core on any stalled or
+        # partial line. Clients that write byte-by-byte are still handled, by
+        # buffering across calls; over-long lines are bounded by MAX_LINESIZE.
+        # Keep on resync with Tails until fixed upstream.
+        while b"\n" not in self._buf:
+            if len(self._buf) > self.MAX_LINESIZE:
+                # Over-long line with no terminator: drop the connection rather
+                # than buffer (or, as upstream did, spin) without bound.
+                return b""
             try:
-                # Some clients (e.g. Tor Browser) write their requests
-                # byte-by-byte, so we peek ahead and make sure we only
-                # read a single, full request.
-                peek_ahead = self.request.recv(self.MAX_LINESIZE, socket.MSG_PEEK)
-                if peek_ahead == b"":
-                    # The client disconnected
-                    return peek_ahead
-                request_length = peek_ahead.find(b"\n")
-                if request_length == -1:
-                    continue
-                return self.request.recv(request_length + 1)
+                chunk = self.request.recv(self.MAX_LINESIZE)
             except socket.timeout:
                 if not self.controller.is_alive():
                     self.recover_controller()
                 continue
+            if chunk == b"":
+                # The client disconnected.
+                return b""
+            self._buf += chunk
+        line, _, self._buf = self._buf.partition(b"\n")
+        return line + b"\n"
 
     def handle(self):
         while True:

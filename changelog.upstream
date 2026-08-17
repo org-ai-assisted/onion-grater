@@ -1,3 +1,43 @@
+commit aa24c44a6461c7d20eab25a8a254d45f96f429b8
+Merge: acbcce6 5556304
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Aug 15 12:57:10 2026 -0400
+
+    Merge remote-tracking branch 'refs/remotes/org-ai-assisted/master'
+
+commit 5556304df69bbc7227bbeb87b6de4762636780b1
+Merge: acbcce6 b07d21f
+Author: assisted-by-ai (Bot Account) (Machine Account) <228987186+assisted-by-ai@users.noreply.github.com>
+Date:   Sat Aug 1 05:01:51 2026 -0400
+
+    Merge pull request #2 from org-ai-assisted/ai
+
+    add CodeQL consumer workflows (actions, python)
+
+commit b07d21fb7c4e500c0e543938c9485dbdb28dd701
+Author: claude (dev142 b93fb2c6-e15f-4d45-8566-f3ded893b70e) <noreply@anthropic.com>
+Date:   Fri Jul 31 12:58:02 2026 -0400
+
+    add CodeQL consumer workflows (actions, python)
+
+    - Replaces GitHub default-setup CodeQL (web-UI state, no file
+      representation) with the org's file-based consumer wrappers.
+    - Byte-identical copies of
+      developer-meta-files/consumer-templates/.github/workflows/.
+    - No .github/dm-consumer.yml needed: consumer-codeql-actions.yml
+      passes no dm-consumer-section, and codeql-python's section is
+      optional (ci/dm-consumer-load.sh soft-skips when absent).
+    - queries stays the reusable's default security-and-quality,
+      a superset of the security-extended suite default setup used.
+
+    Generated with assistance from Claude Code.
+
+commit acbcce6724418dff270e3aabe95b72cfbfe1573d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jul 8 18:16:36 2026 +0000
+
+    bumped changelog version
+
 commit 3ac0e1ec767d6deea87dc28232c152f307d09b9c
 Merge: ae548f9 698a2bc
 Author: Patrick Schleizer <adrelanos@whonix.org>

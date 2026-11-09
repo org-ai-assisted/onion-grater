@@ -59,6 +59,15 @@ wait4 mkdir fchownat _llseek send recv faccessat readlinkat newfstatat ppoll \
 epoll_create1 select pread64 clone3 mremap
 SystemCallArchitectures=native
 
+## W^X: MemoryDenyWriteExecute denies anonymous W+X and mprotect/shmat gaining
+## PROT_EXEC (SystemCallArchitectures=native + LockPersonality above close the
+## secondary-ABI and READ_IMPLIES_EXEC bypasses; the allow-list already omits
+## memfd_create, so that bypass is SIGSYS-killed). NoExecPaths marks the writable
+## dirs non-executable, closing the file-backed exec vector MDWE does not cover.
+## onion-grater is CPython (stem/psutil/yaml; no ctypes callbacks, cffi, or JIT).
+MemoryDenyWriteExecute=true
+NoExecPaths=/run /tmp /var/tmp /dev/shm
+
 ## ProcSubset=pid above is disabled because:
 # onion-grater[23859]: Traceback (most recent call last):
 # onion-grater[23859]:   File "/usr/lib/python3/dist-packages/psutil/_common.py", line 403, in wrapper

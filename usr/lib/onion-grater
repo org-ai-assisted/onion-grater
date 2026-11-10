@@ -1,4 +1,4 @@
-#!/usr/bin/python3 -IBu
+#!/usr/bin/python3 -Bsu
 
 # This filter proxy allows fine-grained access allowlists of commands
 # (and their argunents) and events on a per-application basis, stored
@@ -1035,10 +1035,12 @@ def main():
         default=False,
         help=("disables all filtering and just prints the commands sent by the client"),
     )
+    with open("/proc/cmdline", encoding="utf-8") as cmdline_file:
+        debug_in_cmdline = "debug" in cmdline_file.read().split()
     parser.add_argument(
         "--debug",
         action="store_true",
-        default="debug" in open("/proc/cmdline").read().split(),
+        default=debug_in_cmdline,
         help="prints all requests and responses",
     )
     # We put the argparse results in the global scope since it's
